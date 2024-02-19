@@ -1,0 +1,12 @@
+incremental_db
+**/incremental_db/
+output_files
+**/output_files/
+db
+**/db/
+*.done
+*.sof
+*.sld
+*.jdi
+*.done
+*.qws

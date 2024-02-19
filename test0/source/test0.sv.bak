@@ -1,0 +1,61 @@
+module test0(input logic CLK,           /* Dedicated on-board PLL */
+             input logic nRST,          /* MSEL[5] */
+             input logic PB[3:0],       /* Push Buttons */
+             input logic SW[9:0],       /* Large Slide Switches */
+             input logic MSEL[4:0],     /* MSEL Slide Switches (not SW10) */
+             output logic LED[9:0],     /* LEDs */
+             output logic SS[5:0][7:0]  /* Seven Segment Displays */
+);
+    logic [23:0] count;
+    logic match;
+    
+    localparam NUM_PUSH_BUTTONS = 4;
+    localparam NUM_SLIDE_SWITCHES = 10;
+    localparam NUM_MSEL_SWITCHES = 5;
+
+    logic [NUM_PUSH_BUTTONS-1:0] PB_sync;
+    logic [NUM_SLIDE_SWITCHES-1:0] SW_sync;
+    logic [NUM_MSEL_SWITCHES-1:0] MSEL_sync;
+
+    // push button synchronizers
+    genvar i;
+    generate
+        for(i = 0; i < NUM_PUSH_BUTTONS; i++) begin
+            synchronizer #(0) sync_anon (.CLK(CLK),
+                                    .nRST(nRST),
+                                    .signal(PB[i]),
+                                    .signal_sync(PB_sync[i]));
+        end
+    endgenerate
+    generate
+        for(i = 0; i < NUM_SLIDE_SWITCHES; i++) begin
+            synchronizer #(0) sync_anon (.CLK(CLK),
+                                    .nRST(nRST),
+                                    .signal(SW[i]),
+                                    .signal_sync(SW_sync[i]));
+        end
+    endgenerate
+    generate
+        for(i = 0; i < NUM_MSEL_SWITCHES; i++) begin
+            synchronizer #(.RESET_VALUE(0)) sync_anon (.CLK(CLK),
+                                    .nRST(nRST),
+                                    .signal(MSEL[i]),
+                                    .signal_sync(MSEL_sync[i]));
+        end
+    endgenerate
+
+    ss_display ssDriver(.CLK(CLK),
+                        .nRST(nRST),
+                        .number(count),
+                        .en_mask(6'b101111),
+                        .SS(SS));
+    
+    flex_counter cnt(.CLK(CLK), 
+                     .nRST(nRST),
+                     .enable(SW_sync[0]), 
+                     .clear(SW_sync[9]),
+                     .rollover_val(24'hFFFFFF),
+                     .flag_compare(24'h800000),
+                     .count(count),
+                     .match_flag(match));
+endmodule
