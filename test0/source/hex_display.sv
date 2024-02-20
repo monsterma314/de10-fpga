@@ -1,6 +1,6 @@
 module hex_display
     #(parameter NUM_SEGMENTS = 8,
-      parameter BITS_PER_HEXCHAR = 16)
+      parameter BITS_PER_NIBBLE = 4)
 (
                    input logic [BITS_PER_NIBBLE-1:0] hex_char,
                    input logic enable_dp,
@@ -11,7 +11,7 @@ module hex_display
     /* Active low driver */
     // TODO: Debug WAARNING... "truncated value with size 112 to match 
     //                          size of target (28)"
-    logic [BITS_PER_HEXCHAR-1:0][NUM_SEGMENTS-2:0] hex_char_lut = {
+    logic [(1<<BITS_PER_NIBBLE)-1:0][NUM_SEGMENTS-2:0] hex_char_lut = {
         7'b1000000,   // 0
         7'b1111001,   // 1
         7'b0111011,   // 2
