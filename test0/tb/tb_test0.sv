@@ -8,16 +8,18 @@ parameter LED_W = 10;
 parameter SEGMENT_W = 8;
 parameter DISPLAY_W = 6;
 
+parameter CLK_PERIOD = 10ns;
+
 /* DUT Inputs */
 logic tb_clk;
 logic tb_nrst = 1'b1;
 
 logic [PB_W-1:0] tb_PB;
-logic [SW__W-1:0] tb_SW;
+logic [SW_W-1:0] tb_SW;
 
 /* DUT Outputs */
-logic [9:0] tb_expected_LEDR;
-logic [5:0][7:0] tb_expected_SS;
+logic [9:0] tb_LEDR;
+logic [5:0][7:0] tb_SS;
 
 /* DUT Expected Outputs */
 logic [9:0] tb_expected_LEDR;
@@ -39,7 +41,6 @@ end
 test0 DUT(.CLK(tb_clk), .nRST(tb_nrst),
           .PB(tb_PB),
           .SW(tb_SW),
-          .MSEL(tb_MSEL),
           .LEDR(tb_LEDR),
           .SS(tb_SS));
 
@@ -49,17 +50,21 @@ test0 DUT(.CLK(tb_clk), .nRST(tb_nrst),
 initial begin
     // Reset the DUT
     reset_dut();
+
+    @(negedge tb_clk);
+    $stop;
 end
 
 /* Reset the DUT to default state */
 task reset_dut();
+    test_name = "Reset DUT";
     @(negedge tb_clk);
     tb_nrst = 1'b0;
     @(negedge tb_clk);
     tb_nrst = 1'b1;
 endtask
 
-task check_leds();
+task check_leds;
     input logic [LED_W-1:0] expected_leds;
     input logic [LED_W-1:0] actual_leds;
     begin

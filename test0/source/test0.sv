@@ -42,7 +42,7 @@ module test0(input logic CLK,           /* Dedicated on-board PLL */
                         .en_mask(6'b101111),
                         .SS(SS));
     
-    flex_counter cnt(.CLK(CLK), 
+    flex_counter #(.CNT_WIDTH(24)) cnt(.CLK(CLK), 
                      .nRST(nRST),
                      .enable(SW_sync[0]), 
                      .clear(SW_sync[9]),

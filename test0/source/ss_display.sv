@@ -26,10 +26,11 @@ module ss_display
     logic active;
     logic active_ff;
     logic done;
-    
-    assign hex_char = number_ff[4*display_idx +: 4];
 
     logic [COUNT_WIDTH-1:0] display_idx; // width is $clog2(NUM_DISPLAYS)
+
+    assign hex_char = number_ff[4*display_idx +: 4];
+
 
     assign active = (load_enable || active_ff);
 
